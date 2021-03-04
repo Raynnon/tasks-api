@@ -7,11 +7,9 @@ router.post("/users", async (req, res) => {
   const user = new User(req.body);
 
   try {
-    await user.save();
-
+    await user.save().catch((e) => console.log(e));
     const token = await user.generateAuthToken();
-
-    res.status(201).send({ user, token });
+    res.send({ user, token });
   } catch (e) {
     res.status(400).send(e);
   }
@@ -82,7 +80,7 @@ router.patch("/users/me", auth, async (req, res) => {
   }
 });
 
-router.delete("/users/:id", auth, async (req, res) => {
+router.delete("/users/me", auth, async (req, res) => {
   try {
     await req.user.remove();
     res.send(req.user);
