@@ -21,6 +21,7 @@ router.post("/users/login", async (req, res) => {
       req.body.email,
       req.body.password
     );
+
     const token = await user.generateAuthToken();
 
     res.send({ user, token });
@@ -55,6 +56,7 @@ router.post("/users/logoutAll", auth, async (req, res) => {
 });
 
 router.get("/users/me", auth, async (req, res) => {
+  console.log(req.user);
   res.send(req.user);
 });
 

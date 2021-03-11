@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
-const connectionURL = "mongodb://127.0.0.1:27017/tasks-api";
+const connectionURL =
+  "mongodb+srv://Raynnon:ypwd3j@organisemecluster.l0jnw.mongodb.net/test";
 
 mongoose.connect(connectionURL, {
   useNewUrlParser: true,
