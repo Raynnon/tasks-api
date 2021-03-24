@@ -1,5 +1,6 @@
 const express = require("express");
 const multer = require("multer");
+var path = require("path");
 
 const User = require("../models/user");
 const auth = require("../middleware/auth");
@@ -93,26 +94,45 @@ router.delete("/users/me", auth, async (req, res) => {
   }
 });
 
+// POST USER IMAGE
+const storage = multer.diskStorage({
+  destination: "./avatar",
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      file.originalname.split(".").slice(0, -1).join(".") +
+        "-" +
+        Date.now() +
+        path.extname(file.originalname)
+    );
+  },
+});
+
 const upload = multer({
-  dest: "avatar",
+  storage: storage,
   limits: {
-    fileSize: 1000000,
+    fileSize: 6000000,
   },
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error("File must be a png or a jpg"));
+      return cb(
+        new Error("File must be a png or a jpg and not be bigger than 6Mb")
+      );
     }
 
     cb(undefined, true);
   },
 });
 
-router.post("/users/me/avatar", [auth, upload.single("avatar")], (req, res) => {
-  try {
+router.post(
+  "/users/me/avatar",
+  [auth, upload.single("avatar")],
+  (req, res) => {
     res.send("success");
-  } catch (e) {
-    res.status(500).send(e);
+  },
+  (error, req, res, next) => {
+    res.status(400).send({ error: error.message });
   }
-});
+);
 
 module.exports = router;
