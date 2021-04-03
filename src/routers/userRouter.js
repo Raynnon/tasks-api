@@ -1,4 +1,5 @@
 const express = require("express");
+const fs = require("fs");
 const multer = require("multer");
 var path = require("path");
 
@@ -95,16 +96,18 @@ router.delete("/users/me", auth, async (req, res) => {
 });
 
 // POST USER IMAGE
+const avatarFolder = path.join(__dirname, "../avatar/");
+let avatarName = "";
+
 const storage = multer.diskStorage({
-  destination: "./avatar",
+  destination: avatarFolder,
   filename: (req, file, cb) => {
-    cb(
-      null,
+    avatarName =
       file.originalname.split(".").slice(0, -1).join(".") +
-        "-" +
-        Date.now() +
-        path.extname(file.originalname)
-    );
+      "-" +
+      Date.now() +
+      path.extname(file.originalname);
+    cb(null, avatarName);
   },
 });
 
@@ -125,14 +128,29 @@ const upload = multer({
 });
 
 router.post(
-  "/users/me/avatar",
+  "/users/me/upload-avatar",
   [auth, upload.single("avatar")],
   (req, res) => {
+    if (req.user.avatar) {
+      fs.unlinkSync(avatarFolder + req.user.avatar);
+    }
+
+    req.user.avatar = avatarName;
+    req.user.save();
     res.send("success");
   },
   (error, req, res, next) => {
     res.status(400).send({ error: error.message });
   }
 );
+
+// get user image
+router.get("/users/me/avatar", auth, (req, res) => {
+  if (req.user.avatar) {
+    res.sendFile(avatarFolder + req.user.avatar);
+  } else {
+    res.sendFile(avatarFolder + "profil-picture-anonymous.png");
+  }
+});
 
 module.exports = router;
