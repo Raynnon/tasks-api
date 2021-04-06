@@ -146,8 +146,10 @@ router.post(
 
 // get user image
 router.get("/users/me/avatar", auth, (req, res) => {
-  if (req.user.avatar) {
-    res.sendFile(avatarFolder + req.user.avatar);
+  const avatar = req.user.avatar;
+
+  if (avatar) {
+    res.sendFile(avatarFolder + avatar);
   } else {
     res.sendFile(avatarFolder + "profil-picture-anonymous.png");
   }
