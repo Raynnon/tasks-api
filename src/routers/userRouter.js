@@ -134,7 +134,6 @@ router.post(
     if (req.user.avatar) {
       fs.unlinkSync(avatarFolder + req.user.avatar);
     }
-
     req.user.avatar = avatarName;
     req.user.save();
     res.send("success");
