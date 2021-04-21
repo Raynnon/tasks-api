@@ -86,8 +86,16 @@ router.patch("/users/me", auth, async (req, res) => {
   }
 });
 
+const avatarFolder = path.join(__dirname, "../avatar/");
+
 router.delete("/users/me", auth, async (req, res) => {
   try {
+    const avatar = req.user.avatar;
+
+    if (avatar) {
+      fs.unlinkSync(avatarFolder + avatar);
+    }
+
     await req.user.remove();
     res.send(req.user);
   } catch (e) {
@@ -96,7 +104,6 @@ router.delete("/users/me", auth, async (req, res) => {
 });
 
 // POST USER IMAGE
-const avatarFolder = path.join(__dirname, "../avatar/");
 let avatarName = "";
 
 const storage = multer.diskStorage({
