@@ -2,13 +2,14 @@ const express = require("express");
 const cron = require("node-cron");
 const cors = require("cors");
 require("./db/mongoose");
+require("dotenv").config();
 const User = require("./models/user");
 
 const userRouter = require("./routers/userRouter");
 const taskRouter = require("./routers/taskRouter");
 
 const app = express();
-const port = process.env.port || 4000;
+const port = process.env.SERVER_PORT;
 
 app.use(cors());
 app.use(express.json());
